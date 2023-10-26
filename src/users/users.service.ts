@@ -1,57 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './users.entity';
-
-let id: number = 1;
-
-const users : User[] = [
-    {
-        id: 0,
-        lastname: 'Doe',
-        firstname: 'John',
-        age: 23
-    }
-]
+import { InjectRepository } from '@nestjs/typeorm';
+import { Equal, Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-    getAll(): User[] {
-        return users;
+
+    id: number = 1;
+    constructor(
+        @InjectRepository(User)
+        private repository: Repository<User>
+    ) {}
+
+    public async getAll(): Promise<User[]> {
+        return await this.repository.find();
     }
 
-    getById(id: number): User {
-        const result = users.filter((user)=> user.id==id);
-        return result[0];
+    public async getById(idToFind: number): Promise<User> {
+        const result = await this.repository.findOne({where: {id: Equal(idToFind)}});
+        return result;
     }
 
-    create(lastname: string, firstname: string, age: number): User {
-        const newUser = new User(id, lastname, firstname, age);
-        id = id+1;
-        users.push(newUser);
-        return newUser;
+    public async create(param_lastname: string, param_firstname: string, param_age: number): Promise<User> {
+        const user = await this.repository.create({
+            id: this.id,
+            firstName: param_firstname,
+            lastName: param_lastname,
+            age: param_age
+        });
+        this.id++;
+        this.repository.save(user);
+        return user;
     }
 
-    modifyUser(id: number, lastname: string, firstname: string, age: number): User {
-        const result = users.filter((user)=> user.id==id);
-        if(firstname !== undefined){
-            result[0].firstname = firstname;
+    public async modifyUser(id: number, param_lastname: string, param_firstname: string, param_age: number): Promise<User> {
+        if(param_firstname !== undefined){
+            await this.repository.update(id, { firstName: param_firstname });
         }
-        if(lastname !== undefined){
-            result[0].lastname = lastname;
+        if(param_lastname !== undefined){
+            await this.repository.update(id, { lastName: param_lastname });
         }
-        if(age !== undefined){
-            result[0].age = age;
+        if(param_age !== undefined){
+            await this.repository.update(id, { age: param_age });
         }
-        return result[0];
+        const result = this.repository.findOne({where: {id: Equal(id)}});
+        return result;
     }
 
-    deleteUser(id: number): boolean{
-        const result = users.filter((user)=> user.id==id);
-        const index = users.indexOf(result[0]);
-        if(index===-1){
+    public async deleteUser(id: number): Promise<boolean>{
+        if(id===-1){
             return false;
         }
         else{
-            users.splice(index,1);
+            await this.repository.delete(id);
             return true;
         }
     }
