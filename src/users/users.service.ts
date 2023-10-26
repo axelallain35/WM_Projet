@@ -38,6 +38,9 @@ export class UsersService {
         if(lastname !== undefined){
             result[0].lastname = lastname;
         }
+        if(age !== undefined){
+            result[0].age = age;
+        }
         return result[0];
     }
 
