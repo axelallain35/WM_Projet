@@ -8,7 +8,7 @@ export class Association{
 
     @ManyToMany(type => User,{eager: true})
     @JoinTable()
-    public users:User[];
+    public users:number[];
 
     @Column()
     public name: string;

@@ -2,8 +2,25 @@ import { Controller, Get, Body, Post, Delete, Param, Put, HttpException, HttpSta
 import { Association } from './associations.entity';
 import { AssociationsService } from './associations.service';
 import { User } from 'src/users/users.entity';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 
+export class AssociationInput {
+    @ApiProperty({
+        description: 'The name of the association',
+        example: "Association 1",
+        type: String,
+    })
+    public name: string;
 
+    @ApiProperty({
+        description: 'The id of the users',
+        example: [1,2],
+        type: [Number],
+    })
+    public idUsers: number[];
+}
+
+@ApiTags('associations')
 @Controller('associations')
 export class AssociationsController {
 
@@ -30,7 +47,7 @@ export class AssociationsController {
         }
 
     @Post()
-        public async create(@Body() input: any): Promise<Association> {
+        public async create(@Body() input: AssociationInput): Promise<Association> {
             const user = await this.service.createAssociation(input.idUsers, input.name);
             return user;
         }
