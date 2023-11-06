@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from './users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -21,19 +22,23 @@ export class UsersService {
         return result;
     }
 
-    public async create(param_lastname: string, param_firstname: string, param_age: number): Promise<User> {
+    public async create(param_lastname: string, param_firstname: string, param_age: number, param_password: string): Promise<User> {
+        const password: string = param_password;
+        const saltOrRounds = 10;
+        const hash = await bcrypt.hash(password, saltOrRounds);
         const user = await this.repository.create({
             id: this.id,
             firstName: param_firstname,
             lastName: param_lastname,
-            age: param_age
+            age: param_age,
+            password: hash
         });
         this.id++;
         this.repository.save(user);
         return user;
     }
 
-    public async modifyUser(id: number, param_lastname: string, param_firstname: string, param_age: number): Promise<User> {
+    public async modifyUser(id: number, param_lastname: string, param_firstname: string, param_age: number, param_password: string): Promise<User> {
         if(param_firstname !== undefined){
             await this.repository.update(id, { firstName: param_firstname });
         }
@@ -42,6 +47,12 @@ export class UsersService {
         }
         if(param_age !== undefined){
             await this.repository.update(id, { age: param_age });
+        }
+        if(param_password !== undefined){
+            const password: string = param_password;
+            const saltOrRounds = 10;
+            const hash = await bcrypt.hash(password, saltOrRounds);
+            await this.repository.update(id, { password: hash });
         }
         const result = this.repository.findOne({where: {id: Equal(id)}});
         return result;

@@ -53,14 +53,14 @@ export class AssociationsController {
         }
 
     @Put(':id')
-        public async modifyUser(@Param() parameter, @Body() input: any): Promise<Association> {
+        public async modifyAssociation(@Param() parameter, @Body() input: any): Promise<Association> {
             const association = await this.service.modifyAssociation(parameter.id, input.idUsers, input.name);
             if(association == undefined) throw new HttpException(`Could not find an association with the id ${parameter.id}`, HttpStatus.NOT_FOUND);
             return association;
         }
 
     @Delete(':id')
-        public async deleteUser(@Param() parameter): Promise<boolean>{
+        public async deleteAssociation(@Param() parameter): Promise<boolean>{
             const success = await this.service.deleteAssociation(parameter.id);
             if(!success) throw new HttpException(`Could not find an association with the id ${parameter.id}`, HttpStatus.NOT_FOUND);
             return success;

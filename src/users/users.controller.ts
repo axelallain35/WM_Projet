@@ -1,7 +1,8 @@
-import { Controller, Get, Body, Post, Delete, Param, Put, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Body, Post, Delete, Param, Put, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { User } from './users.entity';
 import { UsersService } from './users.service';
 import { ApiCreatedResponse, ApiParam, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 
 export class UserInput {
     @ApiProperty({
@@ -25,6 +26,13 @@ export class UserInput {
         type: Number,
     })
     public age: number;
+
+    @ApiProperty({
+        description: 'The password of the user',
+        example: "1234badpassword",
+        type: String
+    })
+    public password: string;
 }
 
 
@@ -32,17 +40,12 @@ export class UserInput {
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-    @ApiProperty({
-        description: 'The id of the user',
-        example: 1,
-        type: Number,
-    })
-    public id: number;
 
     constructor(
         private service: UsersService
     ) {}
 
+    @UseGuards(AuthGuard('jwt'))
     @Get()
     public async getAll(){
        return await this.service.getAll();
@@ -62,13 +65,13 @@ export class UsersController {
     })
     @Post()
         public async create(@Body() input: UserInput): Promise<User> {
-            const user = await this.service.create(input.lastname, input.firstname, input.age);
+            const user = await this.service.create(input.lastname, input.firstname, input.age, input.password);
             return user;
         }
 
     @Put(':id')
         public async modifyUser(@Param() parameter, @Body() input: any): Promise<User> {
-            const user = await this.service.modifyUser(parameter.id, input.lastname, input.firstname, input.age);
+            const user = await this.service.modifyUser(parameter.id, input.lastname, input.firstname, input.age, input.password);
             if(user == undefined) throw new HttpException(`Could not find a user with the id ${parameter.id}`, HttpStatus.NOT_FOUND);
             return user;
         }

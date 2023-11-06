@@ -14,10 +14,7 @@ export class User{
     @Column()
     public age: number;
 
-    constructor(id: number, lastname: string, firstname: string, age:number){
-        this.id = id;
-        this.lastName = lastname;
-        this.firstName = firstname;
-        this.age = age;
-    }
+    @Column()
+    public password: string;
+
 }
