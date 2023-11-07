@@ -8,7 +8,6 @@ import { Equal, Repository } from 'typeorm';
 
 @Injectable()
 export class AssociationsService {
-    id: number = 1;
 
     constructor(
         @InjectRepository(Association)
@@ -37,11 +36,9 @@ export class AssociationsService {
 
     public async createAssociation(param_idUsers: number[], param_name: string): Promise<Association> {
         const association = await this.repository.create({
-            id: this.id,
             users: param_idUsers,
             name: param_name
         });
-        this.id++;
         await this.repository.save(association);
         return association;
     }

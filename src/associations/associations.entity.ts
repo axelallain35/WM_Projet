@@ -1,9 +1,9 @@
 import { User } from 'src/users/users.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinTable, IntegerType } from 'typeorm';
 
 @Entity()
 export class Association{
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ name:'id', type:'integer' })
     public id: number;
 
     @ManyToMany(type => User,{eager: true})

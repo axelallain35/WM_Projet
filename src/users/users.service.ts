@@ -7,7 +7,6 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UsersService {
 
-    id: number = 1;
     constructor(
         @InjectRepository(User)
         private repository: Repository<User>
@@ -27,13 +26,11 @@ export class UsersService {
         const saltOrRounds = 10;
         const hash = await bcrypt.hash(password, saltOrRounds);
         const user = await this.repository.create({
-            id: this.id,
             firstName: param_firstname,
             lastName: param_lastname,
             age: param_age,
             password: hash
         });
-        this.id++;
         this.repository.save(user);
         return user;
     }
