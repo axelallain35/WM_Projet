@@ -15,9 +15,9 @@ export class AssociationInput {
     @ApiProperty({
         description: 'The id of the users',
         example: [1,2],
-        type: [Number],
+        type: [User],
     })
-    public idUsers: number[];
+    public idUsers: User[];
 }
 
 @ApiTags('associations')

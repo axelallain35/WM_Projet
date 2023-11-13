@@ -19,7 +19,7 @@ export class RoleController {
 
     @Get('/:idUser/:idAssoc')
         public async getById(@Param() param): Promise<Role> {
-            const role = await this.service.getById(param.idUser,param.idAssoc);
+            const role = await this.service.getById(param.idUser.id,param.idAssoc.id);
             if(role == undefined) throw new HttpException(`Could not find a role for the user ${param.idUser} in the association ${param.idAssoc}`, HttpStatus.NOT_FOUND);
             return role;
         }
@@ -40,8 +40,8 @@ export class RoleController {
 
     @Delete('/:idUser/:idAssoc')
         public async deleteRole(@Param() parameter): Promise<boolean>{
-            const success = await this.service.deleteUser(parameter.idUser, parameter.idAssoc);
-            if(!success) throw new HttpException(`Could not find a user with the id ${parameter.id}`, HttpStatus.NOT_FOUND);
+            const success = await this.service.deleteRole(parameter.idUser, parameter.idAssoc);
+            if(!success) throw new HttpException(`Could not find a role for the user ${parameter.idUser} in the association ${parameter.idAssoc}`, HttpStatus.NOT_FOUND);
             return success;
         }
 }

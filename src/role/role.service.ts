@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
+import { Association } from 'src/associations/associations.entity';
+import { User } from 'src/users/users.entity';
 
 @Injectable()
 export class RoleService {
@@ -14,16 +16,17 @@ export class RoleService {
         return await this.repository.find();
     }
 
-    public async getById(idUserToFind: number, idAssocToFind: number): Promise<Role> {
-        const result = await this.repository.find({where: {
+    public async getById(idUserToFind: User, idAssocToFind: Association): Promise<Role> {
+        const result = await this.repository.find({
+            where: {
                 idUser: idUserToFind,
-                idAssociation: idAssocToFind
-            }
+                idAssociation: idAssocToFind,
+            },
          });
         return result[0];
     }
 
-    public async create(param_name: string, param_idUser: number, param_idAssoc: number): Promise<Role> {
+    public async create(param_name: string, param_idUser: User, param_idAssoc: Association): Promise<Role> {
         const role = await this.repository.create({
             name: param_name,
             idUser: param_idUser,
@@ -33,26 +36,26 @@ export class RoleService {
         return role;
     }
 
-    public async modifyUser(idUser: number, idAssoc: number, param_name: string, param_idUser: number, param_idAssoc: number): Promise<User> {
+    public async modifyRole(idUserToFind: User, idAssoc: Association, param_name: string, param_idUser: User, param_idAssoc: Association): Promise<Role> {
         if(param_name !== undefined){
-            await this.repository.update(id, { firstName: param_firstname });
-        }
-        if(param_idUser !== undefined){
-            await this.repository.update(id, { lastName: param_lastname });
+            await this.repository.update({idUser: idUserToFind, idAssociation: idAssoc}, {name: param_name});
         }
         if(param_idAssoc !== undefined){
-            await this.repository.update(id, { age: param_age });
+            await this.repository.update({idUser: idUserToFind, idAssociation: idAssoc}, {idAssociation: param_idAssoc});
         }
-        const result = this.repository.findOne({where: {id: Equal(id)}});
+        if(param_idUser !== undefined){
+            await this.repository.update({idUser: idUserToFind, idAssociation: idAssoc}, {idUser: idUserToFind});
+        }
+        const result = this.getById(idUserToFind, idAssoc);
         return result;
     }
 
-    public async deleteUser(id: number): Promise<boolean>{
-        if(id===-1){
+    public async deleteRole(idUserToFind: User, idAssoc: Association): Promise<boolean>{
+        if(this.getById(idUserToFind, idAssoc)===undefined){
             return false;
         }
         else{
-            await this.repository.delete(id);
+            await this.repository.delete({idUser: idUserToFind, idAssociation: idAssoc});
             return true;
         }
     }

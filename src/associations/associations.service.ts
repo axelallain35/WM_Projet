@@ -20,7 +20,7 @@ export class AssociationsService {
         const association = await this.repository.findOne({where: {id: Equal(id)} });
         const members = [];
         for(const user of association.users){
-            members.push(await this.service.getById(user));
+            members.push(await this.service.getById(user.id));
         }
         return members;
     }
@@ -34,7 +34,7 @@ export class AssociationsService {
         return association;
     }
 
-    public async createAssociation(param_idUsers: number[], param_name: string): Promise<Association> {
+    public async createAssociation(param_idUsers: User[], param_name: string): Promise<Association> {
         const association = await this.repository.create({
             users: param_idUsers,
             name: param_name
@@ -43,7 +43,7 @@ export class AssociationsService {
         return association;
     }
 
-    public async modifyAssociation(param_id: number, param_idUsers: number[], param_name: string): Promise<Association> {   
+    public async modifyAssociation(param_id: number, param_idUsers: User[], param_name: string): Promise<Association> {   
         if(param_name !== undefined){
             await this.repository.update(param_id, { users: param_idUsers });
         }

@@ -8,6 +8,7 @@ import { Association } from './associations/associations.entity';
 import { User } from './users/users.entity';
 import { AuthModule } from './auth/auth.module';
 import { RoleModule } from './role/role.module';
+import { Role } from './role/role.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { RoleModule } from './role/role.module';
           type: 'sqlite',
           database: 'mydatabase.db',
           entities: [User,
-                    Association],
+                    Association,
+                    Role],
           synchronize: true,
         }),UsersModule, AssociationsModule, AuthModule, RoleModule],
   controllers: [AppController],

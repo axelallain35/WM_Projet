@@ -1,4 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Association } from "src/associations/associations.entity";
+import { User } from "src/users/users.entity";
 
 export class RoleInput {
     @ApiProperty({
@@ -11,14 +13,14 @@ export class RoleInput {
     @ApiProperty({
         description: 'The id of the user',
         example: "1",
-        type: Number,
+        type: User,
     })
-    public idUser: number;
+    public idUser: User;
 
     @ApiProperty({ 
         description: 'The id of the association',
         example: "1",
-        type: Number,
+        type: Association,
     })
-    public idAssociation: number
+    public idAssociation: Association
 }
