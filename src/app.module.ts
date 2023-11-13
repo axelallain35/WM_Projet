@@ -7,8 +7,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Association } from './associations/associations.entity';
 import { User } from './users/users.entity';
 import { AuthModule } from './auth/auth.module';
-import { RoleModule } from './role/role.module';
-import { Role } from './role/role.entity';
 
 @Module({
   imports: [
@@ -16,10 +14,9 @@ import { Role } from './role/role.entity';
           type: 'sqlite',
           database: 'mydatabase.db',
           entities: [User,
-                    Association,
-                    Role],
+                    Association],
           synchronize: true,
-        }),UsersModule, AssociationsModule, AuthModule, RoleModule],
+        }),UsersModule, AssociationsModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
