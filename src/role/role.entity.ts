@@ -1,19 +1,22 @@
 import { Association } from 'src/associations/associations.entity';
 import { User } from 'src/users/users.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinTable, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Role{
 
-    @Column()
-    public name: string;
+    @PrimaryGeneratedColumn()
+    public id: number;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, {eager: true})
     @JoinColumn()
     public idUser:User;
 
-    @ManyToOne(() => Association)
+    @ManyToOne(() => Association, {eager: true})
     @JoinColumn()
     public idAssociation:Association;
 
+
+    @Column()
+    public name: string;
 }

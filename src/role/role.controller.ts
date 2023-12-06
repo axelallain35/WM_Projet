@@ -19,7 +19,7 @@ export class RoleController {
 
     @Get('/:idUser/:idAssoc')
         public async getById(@Param() param): Promise<Role> {
-            const role = await this.service.getById(param.idUser.id,param.idAssoc.id);
+            const role = await this.service.getById(param.idUser,param.idAssoc);
             if(role == undefined) throw new HttpException(`Could not find a role for the user ${param.idUser} in the association ${param.idAssoc}`, HttpStatus.NOT_FOUND);
             return role;
         }
@@ -27,7 +27,7 @@ export class RoleController {
 
     @Post()
         public async create(@Body() input: RoleInput): Promise<Role> {
-            const role = await this.service.create(input.name, input.idUser, input.idAssociation);
+            const role = await this.service.create(input.idUser, input.idAssociation, input.name);
             return role;
         }
 

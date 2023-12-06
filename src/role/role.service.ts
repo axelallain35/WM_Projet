@@ -2,60 +2,64 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
-import { Association } from 'src/associations/associations.entity';
-import { User } from 'src/users/users.entity';
+import { UsersService } from 'src/users/users.service';
+import { AssociationsService } from 'src/associations/associations.service';
 
 @Injectable()
 export class RoleService {
     constructor(
         @InjectRepository(Role)
-        private repository: Repository<Role>
+        private repository: Repository<Role>,
+        private UsersService: UsersService,
+        private AssociationsService: AssociationsService
     ) {}
 
     public async getAll(): Promise<Role[]> {
         return await this.repository.find();
     }
 
-    public async getById(idUserToFind: User, idAssocToFind: Association): Promise<Role> {
+    public async getById(idUserToFind: number, idAssocToFind: number): Promise<Role> {
         const result = await this.repository.find({
             where: {
-                idUser: idUserToFind,
-                idAssociation: idAssocToFind,
+                idUser: await this.UsersService.getById(idUserToFind),
+                idAssociation: await this.AssociationsService.getById(idAssocToFind),
             },
          });
         return result[0];
     }
 
-    public async create(param_name: string, param_idUser: User, param_idAssoc: Association): Promise<Role> {
+    public async create(param_idUser: number, param_idAssoc: number, param_name: string): Promise<Role> {
+        const User = await this.UsersService.getById(param_idUser);
+        const Association = await this.AssociationsService.getById(param_idAssoc);
         const role = await this.repository.create({
-            name: param_name,
-            idUser: param_idUser,
-            idAssociation: param_idAssoc
+            idUser: User,
+            idAssociation: Association,
+            name: param_name
         });
         this.repository.save(role);
         return role;
     }
 
-    public async modifyRole(idUserToFind: User, idAssoc: Association, param_name: string, param_idUser: User, param_idAssoc: Association): Promise<Role> {
+    public async modifyRole(idUserToFind: number, idAssoc: number, param_name: string, param_idUser: number, param_idAssoc: number): Promise<Role> {
         if(param_name !== undefined){
-            await this.repository.update({idUser: idUserToFind, idAssociation: idAssoc}, {name: param_name});
+            await this.repository.update({idUser: await this.UsersService.getById(idUserToFind), idAssociation: await this.AssociationsService.getById(idAssoc)}, {name: param_name});
         }
         if(param_idAssoc !== undefined){
-            await this.repository.update({idUser: idUserToFind, idAssociation: idAssoc}, {idAssociation: param_idAssoc});
+            await this.repository.update({idUser: await this.UsersService.getById(idUserToFind), idAssociation: await this.AssociationsService.getById(idAssoc)}, {idAssociation: await this.AssociationsService.getById(param_idAssoc)});
         }
         if(param_idUser !== undefined){
-            await this.repository.update({idUser: idUserToFind, idAssociation: idAssoc}, {idUser: idUserToFind});
+            await this.repository.update({idUser: await this.UsersService.getById(idUserToFind), idAssociation: await this.AssociationsService.getById(idAssoc)}, {idUser: await this.UsersService.getById(idUserToFind)});
         }
         const result = this.getById(idUserToFind, idAssoc);
         return result;
     }
 
-    public async deleteRole(idUserToFind: User, idAssoc: Association): Promise<boolean>{
+    public async deleteRole(idUserToFind: number, idAssoc: number): Promise<boolean>{
         if(this.getById(idUserToFind, idAssoc)===undefined){
             return false;
         }
         else{
-            await this.repository.delete({idUser: idUserToFind, idAssociation: idAssoc});
+            await this.repository.delete({idUser: await this.UsersService.getById(idUserToFind), idAssociation: await this.AssociationsService.getById(idAssoc)});
             return true;
         }
     }
